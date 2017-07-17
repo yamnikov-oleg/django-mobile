@@ -1,16 +1,19 @@
 import threading
-import sys
+
 from django.contrib.sessions.models import Session
-from django.template import RequestContext, TemplateDoesNotExist
+from django.template import TemplateDoesNotExist
 from django.test import Client, TestCase
+from django.utils import six
 from mock import MagicMock, Mock, patch
+from .urls import index as index_view
+
+from django.test import RequestFactory
+
 from django_mobile import get_flavour, set_flavour
 from django_mobile.conf import settings
 from django_mobile.compat import get_engine
-from django_mobile.middleware import MobileDetectionMiddleware, \
-    SetFlavourMiddleware
+from django_mobile.middleware import MobileDetectionMiddleware, SetFlavourMiddleware
 
-IS_PYTHON_3 = sys.version > '3'
 
 def _reset():
     '''
@@ -26,7 +29,7 @@ def str_p3_response( string ) :
     we decode it to make it comparable to str objects
     ( python 2 compatibility )
     """
-    if IS_PYTHON_3 :
+    if six.PY3 :
         return string.decode( 'ASCII' )
     return string
 
@@ -158,7 +161,10 @@ class TemplateLoaderTests(BaseTestCase):
         result = result.strip()
         self.assertEqual(result, 'Hello .')
         # simulate RequestContext
-        result = render_to_string('index.html')
+        response = self.client.get('/')
+        result = response.content
+        if six.PY3:
+            result = result.decode('utf-8')
         result = result.strip()
         self.assertEqual(result, 'Hello full.')
         set_flavour('mobile')
@@ -250,15 +256,20 @@ class RealAgentNameTests(BaseTestCase):
 
 class RegressionTests(BaseTestCase):
     def setUp(self):
-        self.desktop = Client()
+        self.desktop = self.client
         # wap triggers mobile behaviour
         self.mobile = Client(HTTP_USER_AGENT='wap')
+        self.request_factory = RequestFactory()
+
+    def get_desktop(self, path):
+        request = self.request_factory.get(path)
+        return index_view(request)
 
     def test_multiple_browser_access(self):
         '''
         Regression test of issue #2
         '''
-        response = self.desktop.get('/')
+        response = self.get_desktop('/')
         self.assertEqual( str_p3_response( response.content.strip() ), 'Hello full.')
 
         response = self.mobile.get('/')
