@@ -8,23 +8,23 @@ matrix:
     - python: 2.7
       env: TOXENV=py27-110
     - python: 3.6
-      env: TOX_ENV=py36-110
+      env: TOXENV=py36-110
     - python: 3.6
-      env: TOX_ENV=py36-111
+      env: TOXENV=py36-111
     - python: 3.6
-      env: TOX_ENV=py36-210
+      env: TOXENV=py36-210
     - python: pypy
-      env: TOX_ENV=pypy-18
+      env: TOXENV=pypy-18
     - python: pypy
-      env: TOX_ENV=pypy-19
+      env: TOXENV=pypy-19
     - python: pypy3
-      env: TOX_ENV=pypy-110
+      env: TOXENV=pypy-110
     - python: pypy3
-      env: TOX_ENV=pypy-111
+      env: TOXENV=pypy-111
     - python: pypy3
-      env: TOX_ENV=pypy-210
+      env: TOXENV=pypy-210
 
 before_install:
   - sudo pip install tox
 script:
-  - tox -e $TOX_ENV
+  - tox -e $TOXENV
