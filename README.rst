@@ -349,10 +349,10 @@ account. To use it, put the following bit into your ``settings.py`` file:
 .. _Django docs:
     https://docs.djangoproject.com/en/dev/topics/templates/#module-django.template.backends.django
 
-.. |build| image:: https://travis-ci.org/gregmuellegger/django-mobile.svg?branch=master
+.. |build| image:: https://travis-ci.org/whyflyru/django-mobile.svg?branch=master
     :alt: Build Status
     :scale: 100%
-    :target: https://travis-ci.org/gregmuellegger/django-mobile
+    :target: https://travis-ci.org/whyflyru/django-mobile
 .. |package| image:: https://badge.fury.io/py/django-mobile.svg
     :alt: Package Version
     :scale: 100%
