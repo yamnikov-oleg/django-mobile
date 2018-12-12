@@ -1,10 +1,16 @@
 import re
+
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:
+    MiddlewareMixin = object
+
 from django_mobile import flavour_storage
 from django_mobile import set_flavour, _init_flavour
 from django_mobile.conf import settings
 
 
-class SetFlavourMiddleware(object):
+class SetFlavourMiddleware(MiddlewareMixin):
     def process_request(self, request):
         _init_flavour(request)
 
@@ -18,7 +24,7 @@ class SetFlavourMiddleware(object):
         return response
 
 
-class MobileDetectionMiddleware(object):
+class MobileDetectionMiddleware(MiddlewareMixin):
     user_agents_test_match = (
         "w3c ", "acs-", "alav", "alca", "amoi", "audi",
         "avan", "benq", "bird", "blac", "blaz", "brew",
@@ -42,9 +48,10 @@ class MobileDetectionMiddleware(object):
     user_agents_exception_search = u"(?:%s)" % u'|'.join((
         'ipad',
     ))
-    http_accept_regex = re.compile("application/vnd\.wap\.xhtml\+xml", re.IGNORECASE)
+    http_accept_regex = re.compile(r"application/vnd\.wap\.xhtml\+xml", re.IGNORECASE)
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(MobileDetectionMiddleware, self).__init__(*args, **kwargs)
         user_agents_test_match = r'^(?:%s)' % '|'.join(self.user_agents_test_match)
         self.user_agents_test_match_regex = re.compile(user_agents_test_match, re.IGNORECASE)
         self.user_agents_test_search_regex = re.compile(self.user_agents_test_search, re.IGNORECASE)
@@ -53,7 +60,7 @@ class MobileDetectionMiddleware(object):
     def process_request(self, request):
         is_mobile = False
 
-        if 'HTTP_USER_AGENT' in request.META :
+        if 'HTTP_USER_AGENT' in request.META:
             user_agent = request.META['HTTP_USER_AGENT']
 
             # Test common mobile values.
