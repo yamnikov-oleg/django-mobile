@@ -41,4 +41,5 @@ class defaults(object):
                 FLAVOURS_TEMPLATE_LOADERS.append(loader)
     FLAVOURS_TEMPLATE_LOADERS = tuple(FLAVOURS_TEMPLATE_LOADERS)
 
+
 settings = SettingsProxy(django_settings, defaults)

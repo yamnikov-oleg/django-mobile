@@ -97,6 +97,6 @@ setup(
         'django_mobile',
         'django_mobile.cache',
     ],
-    tests_require=['Django', 'mock'],
+    tests_require=['Django', 'mock', 'flake8'],
     test_suite='django_mobile_tests.runtests.runtests',
 )

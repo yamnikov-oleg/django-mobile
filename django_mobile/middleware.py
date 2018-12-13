@@ -2,7 +2,7 @@ import re
 
 try:
     from django.utils.deprecation import MiddlewareMixin
-except ImportError:
+except ImportError:  # Django < 1.10
     MiddlewareMixin = object
 
 from django_mobile import flavour_storage
@@ -33,7 +33,7 @@ class MobileDetectionMiddleware(MiddlewareMixin):
         "keji", "leno", "lg-c", "lg-d", "lg-g", "lge-",
         "maui", "maxo", "midp", "mits", "mmef", "mobi",
         "mot-", "moto", "mwbp", "nec-", "newt", "noki",
-        "xda",  "palm", "pana", "pant", "phil", "play",
+        "xda", "palm", "pana", "pant", "phil", "play",
         "port", "prox", "qwap", "sage", "sams", "sany",
         "sch-", "sec-", "send", "seri", "sgh-", "shar",
         "sie-", "siem", "smal", "smar", "sony", "sph-",
@@ -65,13 +65,13 @@ class MobileDetectionMiddleware(MiddlewareMixin):
 
             # Test common mobile values.
             if self.user_agents_test_search_regex.search(user_agent) and \
-                not self.user_agents_exception_search_regex.search(user_agent):
+               not self.user_agents_exception_search_regex.search(user_agent):
                 is_mobile = True
             else:
                 # Nokia like test for WAP browsers.
                 # http://www.developershome.com/wap/xhtmlmp/xhtml_mp_tutorial.asp?page=mimeTypesFileExtension
 
-                if 'HTTP_ACCEPT' in request.META :
+                if 'HTTP_ACCEPT' in request.META:
                     http_accept = request.META['HTTP_ACCEPT']
                     if self.http_accept_regex.search(http_accept):
                         is_mobile = True
