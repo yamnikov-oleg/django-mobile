@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8
 
 __author__ = u'Gregor Müllegger'
-__version__ = '0.8.0+whyfly.2'
+__version__ = '0.8.0+whyfly.3'
 
 
 import threading

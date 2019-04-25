@@ -1,83 +1,41 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-import re
+# vim:fileencoding=utf-8
 import os
-import sys
 from setuptools import setup
 
 
-README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')
-CHANGES_PATH = os.path.join(os.path.dirname(__file__), 'CHANGES.rst')
-
-
-def readfile(filename):
-    if sys.version_info[0] >= 3:
-        return open(filename, 'r', encoding='utf-8').read()
-    else:
-        return open(filename, 'r').read()
-
-
-def get_author(package):
+def get_packages(package):
     """
-    Return package version as listed in `__version__` in `init.py`.
+    Return root package and all sub-packages.
     """
-    init_py = readfile(os.path.join(package, '__init__.py'))
-    author = re.search("__author__ = u?['\"]([^'\"]+)['\"]", init_py).group(1)
-    return UltraMagicString(author)
+    return [dirpath
+            for dirpath, dirnames, filenames in os.walk(package)
+            if os.path.exists(os.path.join(dirpath, '__init__.py'))]
 
 
-def get_version(package):
+def get_package_data(package):
     """
-    Return package version as listed in `__version__` in `init.py`.
+    Return all files under the root package, that are not in a
+    package themselves.
     """
-    init_py = readfile(os.path.join(package, '__init__.py'))
-    return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
+    walk = [(dirpath.replace(package + os.sep, '', 1), filenames)
+            for dirpath, dirnames, filenames in os.walk(package)
+            if not os.path.exists(os.path.join(dirpath, '__init__.py'))]
+
+    filepaths = []
+    for base, filenames in walk:
+        filepaths.extend([os.path.join(base, filename)
+                          for filename in filenames])
+    return {package: filepaths}
 
 
-class UltraMagicString(object):
-    '''
-    Taken from
-    http://stackoverflow.com/questions/1162338/whats-the-right-way-to-use-unicode-metadata-in-setup-py
-    '''
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return self.value
-
-    def __unicode__(self):
-        return self.value.decode('UTF-8')
-
-    def __add__(self, other):
-        return UltraMagicString(self.value + str(other))
-
-    def split(self, *args, **kw):
-        return self.value.split(*args, **kw)
-
-
-if sys.version_info[0] >= 3:
-    long_description = u'\n\n'.join((
-        readfile(README_PATH),
-        readfile(CHANGES_PATH),
-    ))
-else:
-    long_description = u'\n\n'.join((
-        readfile(README_PATH).decode('utf-8'),
-        readfile(CHANGES_PATH).decode('utf-8'),
-    ))
-    long_description = long_description.encode('utf-8')
-    long_description = UltraMagicString(long_description)
-
+version = '0.8.0+whyfly.2'
 
 setup(
     name='django-mobile',
-    version=get_version('django_mobile'),
-    url='https://github.com/gregmuellegger/django-mobile',
+    version=version,
+    url='https://github.com/whyflyru/django-mobile',
     license='BSD',
     description=u'Detect mobile browsers and serve different template flavours to them.',
-    long_description=long_description,
-    author=get_author('django_mobile'),
-    author_email='gregor@muellegger.de',
     keywords='django,mobile',
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -93,10 +51,8 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    packages=[
-        'django_mobile',
-        'django_mobile.cache',
-    ],
+    packages=get_packages('django_mobile'),
+    package_data=get_package_data('django_mobile'),
     tests_require=['Django', 'mock', 'flake8'],
     test_suite='django_mobile_tests.runtests.runtests',
 )

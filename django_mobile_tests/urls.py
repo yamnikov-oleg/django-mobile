@@ -1,7 +1,5 @@
-try:
-    from django.conf.urls.defaults import *
-except ImportError:
-    from django.conf.urls import *
+# vim:fileencoding=utf-8
+from django.conf.urls import *
 from django.shortcuts import render
 from django_mobile.cache import cache_page
 

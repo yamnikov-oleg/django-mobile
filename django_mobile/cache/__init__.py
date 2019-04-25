@@ -1,3 +1,4 @@
+# vim:fileencoding=utf-8
 from django.views.decorators.cache import cache_page as _django_cache_page
 from django.utils.decorators import decorator_from_middleware
 from django_mobile.cache.middleware import FetchFromCacheFlavourMiddleware, UpdateCacheFlavourMiddleware

@@ -40,11 +40,18 @@ clean-test: ## remove test and coverage artifacts
 clean-cache: ## remove pip cache
 	rm -rf .cache
 
+clean-venv: ## remove local venv
+	# instead of pipenv --rm because of if not exists
+	rm -rf `pipenv --venv`
+
+env-prepare: ## install environment
+	pipenv install --dev
+
 lint: ## check style with flake8
-	flake8 setup.py django_mobile
+	pipenv run flake8 setup.py django_mobile
 
 test: ## run tests quickly with the default Python
-	python runtests.py
+	pipenv run py.test --showlocals
 
 release: dist ## package and upload a release
 	twine upload dist/*

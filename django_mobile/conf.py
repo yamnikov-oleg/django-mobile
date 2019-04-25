@@ -32,13 +32,14 @@ class defaults(object):
     FLAVOURS_TEMPLATE_LOADERS = []
     for engine in django_settings.TEMPLATES:
         options = engine.get('OPTIONS')
-        for loader in options['loaders']:
-            if isinstance(loader, (tuple, list)) and loader[0] == CACHE_LOADER_NAME:
-                for cached_loader in loader[1]:
-                    if cached_loader != DJANGO_MOBILE_LOADER:
-                        FLAVOURS_TEMPLATE_LOADERS.append(cached_loader)
-            elif loader != DJANGO_MOBILE_LOADER:
-                FLAVOURS_TEMPLATE_LOADERS.append(loader)
+        if 'loaders' in options:
+            for loader in options['loaders']:
+                if isinstance(loader, (tuple, list)) and loader[0] == CACHE_LOADER_NAME:
+                    for cached_loader in loader[1]:
+                        if cached_loader != DJANGO_MOBILE_LOADER:
+                            FLAVOURS_TEMPLATE_LOADERS.append(cached_loader)
+                elif loader != DJANGO_MOBILE_LOADER:
+                    FLAVOURS_TEMPLATE_LOADERS.append(loader)
     FLAVOURS_TEMPLATE_LOADERS = tuple(FLAVOURS_TEMPLATE_LOADERS)
 
 

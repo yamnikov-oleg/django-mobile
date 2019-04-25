@@ -1,3 +1,4 @@
+# vim:fileencoding=utf-8
 import os
 import warnings
 
@@ -43,7 +44,7 @@ SECRET_KEY = '0'
 ROOT_URLCONF = 'django_mobile_tests.urls'
 
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -87,5 +88,3 @@ TEMPLATES = [
     },
 ]
 
-
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'

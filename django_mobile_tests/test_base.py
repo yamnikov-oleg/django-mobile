@@ -1,10 +1,11 @@
+# vim:fileencoding=utf-8
 import threading
 
 from django.contrib.sessions.models import Session
 from django.template import TemplateDoesNotExist
 from django.test import Client, TestCase
 from django.utils import six
-from mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 from .urls import index as index_view
 
 from django.test import RequestFactory
@@ -16,22 +17,24 @@ from django_mobile.middleware import MobileDetectionMiddleware, SetFlavourMiddle
 
 
 def _reset():
-    '''
+    """
     Reset the thread local.
-    '''
+    """
     import django_mobile
     del django_mobile._local
     django_mobile._local = threading.local()
 
-def str_p3_response( string ) :
+
+def str_p3_response(string):
     """
     Since response.content is a binary string in python 3,
     we decode it to make it comparable to str objects
     ( python 2 compatibility )
     """
-    if six.PY3 :
-        return string.decode( 'ASCII' )
+    if six.PY3:
+        return string.decode('ASCII')
     return string
+
 
 class BaseTestCase(TestCase):
     def setUp(self):
@@ -60,6 +63,7 @@ class BasicFunctionTests(BaseTestCase):
             })
             self.assertTrue(settings.FLAVOURS_COOKIE_KEY in response.cookies)
             self.assertTrue(response.cookies[settings.FLAVOURS_COOKIE_KEY], u'mobile')
+            print(response.content)
             self.assertContains(response, 'Mobile!')
         finally:
             settings.FLAVOURS_STORAGE_BACKEND = original_FLAVOURS_STORAGE_BACKEND
@@ -222,36 +226,43 @@ class SetFlavourMiddlewareTests(BaseTestCase):
         middleware = SetFlavourMiddleware()
         middleware.process_request(request)
         self.assertEqual(set_flavour.call_args,
-            (('mobile', request), {'permanent': True}))
+                         (('mobile', request), {'permanent': True}))
 
 
 class RealAgentNameTests(BaseTestCase):
     def assertFullFlavour(self, agent):
         client = Client(HTTP_USER_AGENT=agent)
         response = client.get('/')
-        if str_p3_response( response.content.strip() ) != 'Hello full.':
+        if str_p3_response(response.content.strip()) != 'Hello full.':
             self.fail(u'Agent is matched as mobile: %s' % agent)
 
     def assertMobileFlavour(self, agent):
         client = Client(HTTP_USER_AGENT=agent)
         response = client.get('/')
-        if str_p3_response( response.content.strip() ) != 'Mobile!':
+        if str_p3_response(response.content.strip()) != 'Mobile!':
             self.fail(u'Agent is not matched as mobile: %s' % agent)
 
     def test_ipad(self):
-        self.assertFullFlavour(u'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10')
+        self.assertFullFlavour(
+            u'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko)'
+            u' Version/4.0.4 Mobile/7B334b Safari/531.21.10')
 
     def test_iphone(self):
-        self.assertMobileFlavour(u'Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3')
+        self.assertMobileFlavour(
+            u'Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko)'
+            u' Version/3.0 Mobile/1A543a Safari/419.3')
 
     def test_motorola_xoom(self):
-        self.assertFullFlavour(u'Mozilla/5.0 (Linux; U; Android 3.0; en-us; Xoom Build/HRI39) AppleWebKit/534.13 (KHTML, like Gecko) Version/4.0 Safari/534.13')
+        self.assertFullFlavour(
+            u'Mozilla/5.0 (Linux; U; Android 3.0; en-us; Xoom Build/HRI39) AppleWebKit/534.13 (KHTML, like Gecko)'
+            u' Version/4.0 Safari/534.13')
 
     def test_opera_mobile_on_android(self):
-        '''
+        """
         Regression test of issue #9
-        '''
-        self.assertMobileFlavour(u'Opera/9.80 (Android 2.3.3; Linux; Opera Mobi/ADR-1111101157; U; en) Presto/2.9.201 Version/11.50')
+        """
+        self.assertMobileFlavour(
+            u'Opera/9.80 (Android 2.3.3; Linux; Opera Mobi/ADR-1111101157; U; en) Presto/2.9.201 Version/11.50')
 
 
 class RegressionTests(BaseTestCase):
@@ -266,30 +277,30 @@ class RegressionTests(BaseTestCase):
         return index_view(request)
 
     def test_multiple_browser_access(self):
-        '''
+        """
         Regression test of issue #2
-        '''
+        """
         response = self.get_desktop('/')
-        self.assertEqual( str_p3_response( response.content.strip() ), 'Hello full.')
+        self.assertEqual(str_p3_response(response.content.strip()), 'Hello full.')
 
         response = self.mobile.get('/')
-        self.assertEqual( str_p3_response( response.content.strip() ), 'Mobile!')
+        self.assertEqual(str_p3_response(response.content.strip()), 'Mobile!')
 
         response = self.desktop.get('/')
-        self.assertEqual( str_p3_response( response.content.strip() ), 'Hello full.')
+        self.assertEqual(str_p3_response(response.content.strip()), 'Hello full.')
 
         response = self.mobile.get('/')
-        self.assertEqual( str_p3_response( response.content.strip() ), 'Mobile!')
+        self.assertEqual(str_p3_response(response.content.strip()), 'Mobile!')
 
     def test_cache_page_decorator(self):
         response = self.mobile.get('/cached/')
-        self.assertEqual( str_p3_response( response.content.strip() ), 'Mobile!')
+        self.assertEqual(str_p3_response(response.content.strip()), 'Mobile!')
 
         response = self.desktop.get('/cached/')
-        self.assertEqual( str_p3_response( response.content.strip() ), 'Hello full.')
+        self.assertEqual(str_p3_response(response.content.strip()), 'Hello full.')
 
         response = self.mobile.get('/cached/')
-        self.assertEqual( str_p3_response( response.content.strip() ), 'Mobile!')
+        self.assertEqual(str_p3_response(response.content.strip()), 'Mobile!')
 
         response = self.desktop.get('/cached/')
-        self.assertEqual( str_p3_response( response.content.strip() ), 'Hello full.')
+        self.assertEqual(str_p3_response(response.content.strip()), 'Hello full.')
