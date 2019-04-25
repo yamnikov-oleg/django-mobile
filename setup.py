@@ -28,7 +28,7 @@ def get_package_data(package):
     return {package: filepaths}
 
 
-version = '0.8.0+whyfly.2'
+version = '0.8.0+whyfly.3'
 
 setup(
     name='django-mobile',
