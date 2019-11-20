@@ -20,9 +20,7 @@ class Loader(BaseLoader):
         return origin.loader.get_contents(origin)
 
     def get_template_sources(self, template_name):
-        print('y')
         template_name = prepare_template_name(template_name)
-        print(template_name)
         for loader in self.other_template_source_loaders:
             if hasattr(loader, 'get_template_sources'):
                 try:
