@@ -50,7 +50,7 @@ env-prepare: ## install environment
 lint: ## check style with flake8
 	pipenv run flake8 setup.py django_mobile
 
-test: ## run tests quickly with the default Python
+test: clean ## run tests quickly with the default Python
 	pipenv run py.test --showlocals
 
 release: dist ## package and upload a release

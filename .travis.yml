@@ -2,11 +2,11 @@ language: python
 matrix:
   include:
     - python: 3.6
-      env: TOXENV=py36-111
-    - python: 3.6
       env: TOXENV=py36-200
     - python: 3.6
       env: TOXENV=py36-210
+    - python: 3.6
+      env: TOXENV=py36-220
 
 before_install:
   - sudo pip install tox
