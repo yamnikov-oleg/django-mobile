@@ -6,9 +6,9 @@ matrix:
     - python: 3.6
       env: TOXENV=py36-220
     - python: 3.7
-      env: TOXENV=py36-210
+      env: TOXENV=py37-210
     - python: 3.7
-      env: TOXENV=py36-220
+      env: TOXENV=py37-220
 
 
 before_install:
