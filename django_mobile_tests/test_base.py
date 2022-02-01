@@ -128,25 +128,24 @@ class TemplateLoaderTests(BaseTestCase):
         @patch.object(app_directories.Loader, 'get_template_sources')
         @patch.object(filesystem.Loader, 'get_template_sources')
         def testing(filesystem_loader, app_directories_loader):
-            filesystem_loader.side_effect = TemplateDoesNotExist('error')
-            app_directories_loader.side_effect = TemplateDoesNotExist('error')
+            filesystem_loader.return_value = iter(["fs/base.html"])
+            app_directories_loader.return_value = iter(["apps/base.html"])
 
             from django_mobile.loader import Loader
             loader = Loader(get_engine())
 
             set_flavour('mobile')
-            with pytest.raises(TemplateDoesNotExist):
-                loader.get_template_sources('base.html')
+            list(loader.get_template_sources('base.html'))
+            filesystem_loader.assert_called_once_with('mobile/base.html')
+            app_directories_loader.assert_called_once_with('mobile/base.html')
 
-            filesystem_loader.assert_called_with('mobile/base.html')
-            self.assertEqual(filesystem_loader.call_args[0][0], 'mobile/base.html')
-            self.assertEqual(app_directories_loader.call_args[0][0], 'mobile/base.html')
+            filesystem_loader.reset_mock()
+            app_directories_loader.reset_mock()
 
             set_flavour('full')
-            with pytest.raises(TemplateDoesNotExist):
-                loader.get_template_sources('base.html')
-            self.assertEqual(filesystem_loader.call_args[0][0], 'full/base.html')
-            self.assertEqual(app_directories_loader.call_args[0][0], 'full/base.html')
+            list(loader.get_template_sources('base.html'))
+            filesystem_loader.assert_called_once_with('full/base.html')
+            app_directories_loader.assert_called_once_with('full/base.html')
 
         testing()
 
