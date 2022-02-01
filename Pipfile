@@ -10,6 +10,7 @@ pytest-cov = "*"
 pytest-django = "*"
 pytest-pythonpath = "*"
 flake8 = "*"
+tox = "*"
 
 [packages]
 

@@ -53,6 +53,9 @@ lint: ## check style with flake8
 test: clean ## run tests quickly with the default Python
 	pipenv run py.test --showlocals
 
+test-all:
+	pipenv run tox
+
 release: dist ## package and upload a release
 	twine upload dist/*
 
